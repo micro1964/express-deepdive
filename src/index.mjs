@@ -11,6 +11,12 @@ const mockUsers = [
         { id: 3, name: "Charlie" }
     ];
 
+const mockProducts = [
+        { id: 1, name: "Laptop", price: 999.99 },
+        { id: 2, name: "Mouse", price: 29.99 },
+        { id: 3, name: "Keyboard", price: 79.99 }
+    ];
+
 app.get('/', (request, response) => {
   response.status(200).json({ message: "Hey! This is a test message." });
 });
@@ -33,12 +39,19 @@ app.get("/api/users/:id", (request, response) => {
 });
 
 app.get('/api/products', (request, response) => {
-    const products = [
-        { id: 1, name: "Laptop", price: 999.99 },
-        { id: 2, name: "Mouse", price: 29.99 },
-        { id: 3, name: "Keyboard", price: 79.99 }
-    ];
-    response.status(200).json(products);
+    response.status(200).json(mockProducts);
+});
+
+app.get("/api/products/:id", (request, response) => {
+    const parsedProduct = parseInt(request.params.id);
+    if (isNaN(parsedProduct)) {
+        return response.status(400).json({ error: "Invalid product ID" });
+    }
+    const findProduct = mockProducts.find(product => product.id === parsedProduct);
+    if (!findProduct) {
+        return response.status(404).json({ error: "Product not found" });
+    }
+    response.status(200).json(findProduct);
 });
 
 app.listen(PORT, () => {
